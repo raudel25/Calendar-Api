@@ -21,8 +21,8 @@ public class Auth : ControllerBase
         if (string.IsNullOrEmpty(user.Email)) return (false, "Email is required");
         if (string.IsNullOrEmpty(user.Password) || user.Password.Length < 5)
             return (false, "Password is required or invalid");
-
-        return (true, "");
+        
+        return this._context.Users.SingleOrDefault(u => u.Email == user.Email) is not null ? (false, "The email is already registered") : (true, "");
     }
 
     [HttpGet]

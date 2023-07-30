@@ -11,9 +11,4 @@ public class CalendarContext : DbContext
         : base(options)
     {
     }
-
-    // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // {
-    //     optionsBuilder.UseMySQL("server=localhost;database=myDatabase;user=raudel;password=2505");
-    // }
 }
