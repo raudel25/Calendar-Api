@@ -15,37 +15,33 @@ public class Auth : ControllerBase
         this._context = context;
     }
 
-    private (bool, string) ValidUser(User user)
-    {
-        if (string.IsNullOrEmpty(user.Name)) return (false, "Name is required");
-        if (string.IsNullOrEmpty(user.Email)) return (false, "Email is required");
-        if (string.IsNullOrEmpty(user.Password) || user.Password.Length < 5)
-            return (false, "Password is required or invalid");
-        
-        return this._context.Users.SingleOrDefault(u => u.Email == user.Email) is not null ? (false, "The email is already registered") : (true, "");
-    }
-
     [HttpGet]
-    public ActionResult<User> Login(AuthRequest request)
+    public ActionResult<UserInf> Login(AuthRequest request)
     {
-        var actUser = _context.Users.SingleOrDefault(u => u.Email == request.Email && u.Password == request.Password);
+        var actUser = _context.Users.SingleOrDefault(u => u.Email == request.Email);
 
-        if (actUser is null) return NotFound();
+        if (actUser is null || !actUser.CheckPassword(request.Password))
+            return BadRequest(new { msg = "Incorrect email or password" });
 
-        return actUser;
+        return actUser.UserInf();
     }
 
     [HttpPost("register")]
     public ActionResult<User> Register(User user)
     {
-        var (valid, msg) = ValidUser(user);
+        var (valid, msg) = user.ValidUser();
 
         if (!valid) return BadRequest(new { msg });
+
+        if (this._context.Users.SingleOrDefault(u => u.Email == user.Email) is not null)
+            return BadRequest(new { msg = "The email is already registered" });
+
+        user.EncryptPassword();
 
         _context.Users.Add(user);
         _context.SaveChanges();
 
-        return CreatedAtAction(nameof(Login), new { id = user.Id }, user);
+        return CreatedAtAction(nameof(Login), user.UserInf());
     }
 
     [HttpGet("renew")]
