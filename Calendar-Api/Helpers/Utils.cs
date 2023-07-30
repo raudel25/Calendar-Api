@@ -1,12 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
-using Calendar_Api.Models;
-using Calendar_Api.Services;
-using System.Text;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
-using Calendar_Api.Helpers;
 
 namespace Calendar_Api.Helpers;
 
@@ -14,6 +6,9 @@ public static class Utils
 {
     public static (int, string) TokenToIdName(string authHeader)
     {
+        if (!authHeader.StartsWith("Bearer "))
+            return (-1, "");
+
         var token = authHeader.Substring("Bearer ".Length).Trim();
 
         var handler = new JwtSecurityTokenHandler();

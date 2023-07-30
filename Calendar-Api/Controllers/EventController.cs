@@ -37,8 +37,6 @@ public class EventController : ControllerBase
     public ActionResult<EventResponse> GetEvent(int id)
     {
         var authHeader = Request.Headers["Authorization"].ToString();
-        if (!authHeader.StartsWith("Bearer "))
-            return BadRequest(new { msg = "Token not found" });
 
         var (idUser, name) = Utils.TokenToIdName(authHeader);
 
@@ -53,8 +51,6 @@ public class EventController : ControllerBase
     public ActionResult<EventResponse> Post(EventRequest request)
     {
         var authHeader = Request.Headers["Authorization"].ToString();
-        if (!authHeader.StartsWith("Bearer "))
-            return BadRequest(new { msg = "Token not found" });
 
         var (id, name) = Utils.TokenToIdName(authHeader);
 
@@ -72,8 +68,6 @@ public class EventController : ControllerBase
     public ActionResult<EventResponse> Put(int id, EventRequest request)
     {
         var authHeader = Request.Headers["Authorization"].ToString();
-        if (!authHeader.StartsWith("Bearer "))
-            return BadRequest(new { msg = "Token not found" });
 
         var (idUser, name) = Utils.TokenToIdName(authHeader);
 
@@ -97,8 +91,6 @@ public class EventController : ControllerBase
     public IActionResult Delete(int id)
     {
         var authHeader = Request.Headers["Authorization"].ToString();
-        if (!authHeader.StartsWith("Bearer "))
-            return BadRequest(new { msg = "Token not found" });
 
         var (idUser, name) = Utils.TokenToIdName(authHeader);
 

@@ -82,9 +82,7 @@ public class AuthController : ControllerBase
     public ActionResult<AuthResponse> ReNew()
     {
         var authHeader = Request.Headers["Authorization"].ToString();
-        if (!authHeader.StartsWith("Bearer "))
-            return BadRequest(new { msg = "Token not found" });
-
+        
         var (id, name) = Utils.TokenToIdName(authHeader);
 
         if (id == -1 && name == "") return BadRequest(new { msg = "Token not found" });
