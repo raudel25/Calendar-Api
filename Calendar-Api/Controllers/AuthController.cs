@@ -11,14 +11,14 @@ using Calendar_Api.Helpers;
 namespace Calendar_Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
-public class Auth : ControllerBase
+[Route("api/auth")]
+public class AuthController : ControllerBase
 {
     private readonly CalendarContext _context;
 
     private readonly IConfiguration _configuration;
 
-    public Auth(CalendarContext context, IConfiguration configuration)
+    public AuthController(CalendarContext context, IConfiguration configuration)
     {
         this._context = context;
         this._configuration = configuration;
@@ -85,17 +85,9 @@ public class Auth : ControllerBase
         if (!authHeader.StartsWith("Bearer "))
             return BadRequest(new { msg = "Token not found" });
 
-        var token = authHeader.Substring("Bearer ".Length).Trim();
-        
-        var handler = new JwtSecurityTokenHandler();
-        var jwtToken = handler.ReadJwtToken(token);
+        var (id, name) = Utils.TokenToIdName(authHeader);
 
-        var idClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "nameid");
-        var nameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "unique_name");
-
-        if (idClaim is null || nameClaim is null) return BadRequest(new { msg = "Token not found" });
-
-        var (id, name) = (int.Parse(idClaim.Value), nameClaim.Value);
+        if (id == -1 && name == "") return BadRequest(new { msg = "Token not found" });
 
         return new AuthResponse(id, name, Jwt(id, name));
     }
