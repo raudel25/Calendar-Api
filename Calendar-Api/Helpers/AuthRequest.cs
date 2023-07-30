@@ -1,4 +1,4 @@
-namespace Calendar_Api.Models;
+namespace Calendar_Api.Helpers;
 
 public class AuthRequest
 {

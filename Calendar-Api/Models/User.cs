@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography;
+using Calendar_Api.Helpers;
 
 namespace Calendar_Api.Models;
 
@@ -14,7 +15,7 @@ public class User
     public string Email { get; set; }
     public string Password { get; set; }
 
-    public UserInf UserInf() => new(this.Id, this.Name);
+    public AuthResponse AuthResponse(string token) => new(this.Id, this.Name,token);
 
     public (bool, string) ValidUser()
     {

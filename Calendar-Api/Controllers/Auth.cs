@@ -1,6 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Calendar_Api.Models;
 using Calendar_Api.Services;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using Calendar_Api.Helpers;
 
 namespace Calendar_Api.Controllers;
 
@@ -10,24 +16,52 @@ public class Auth : ControllerBase
 {
     private readonly CalendarContext _context;
 
-    public Auth(CalendarContext context)
+    private readonly IConfiguration _configuration;
+
+    public Auth(CalendarContext context, IConfiguration configuration)
     {
         this._context = context;
+        this._configuration = configuration;
     }
 
-    [HttpGet]
-    public ActionResult<UserInf> Login(AuthRequest request)
+    private string Jwt(int id, string name)
     {
-        var actUser = _context.Users.SingleOrDefault(u => u.Email == request.Email);
+        var issuer = _configuration["Jwt:Issuer"];
+        var audience = _configuration["Jwt:Audience"];
+        var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]!);
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, id.ToString()),
+                new Claim(ClaimTypes.Name, name)
+            }),
+            Expires = DateTime.UtcNow.AddHours(2),
+            Issuer = issuer,
+            Audience = audience,
+            SigningCredentials =
+                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
+        };
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        var jwtToken = tokenHandler.WriteToken(token);
 
-        if (actUser is null || !actUser.CheckPassword(request.Password))
+        return jwtToken;
+    }
+
+    [HttpGet("login")]
+    public ActionResult<AuthResponse> Login(AuthRequest request)
+    {
+        var user = _context.Users.SingleOrDefault(u => u.Email == request.Email);
+
+        if (user is null || !user.CheckPassword(request.Password))
             return BadRequest(new { msg = "Incorrect email or password" });
 
-        return actUser.UserInf();
+        return user.AuthResponse(Jwt(user.Id, user.Name));
     }
 
     [HttpPost("register")]
-    public ActionResult<User> Register(User user)
+    public ActionResult<AuthResponse> Register(User user)
     {
         var (valid, msg) = user.ValidUser();
 
@@ -41,12 +75,28 @@ public class Auth : ControllerBase
         _context.Users.Add(user);
         _context.SaveChanges();
 
-        return CreatedAtAction(nameof(Login), user.UserInf());
+        return user.AuthResponse(Jwt(user.Id, user.Name));
     }
 
-    [HttpGet("renew")]
-    public IActionResult ReNew()
+    [HttpGet("renew"), Authorize]
+    public ActionResult<AuthResponse> ReNew()
     {
-        return Ok(new { msg = "renew" });
+        var authHeader = Request.Headers["Authorization"].ToString();
+        if (!authHeader.StartsWith("Bearer "))
+            return BadRequest(new { msg = "Token not found" });
+
+        var token = authHeader.Substring("Bearer ".Length).Trim();
+        
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
+
+        var idClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "nameid");
+        var nameClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "unique_name");
+
+        if (idClaim is null || nameClaim is null) return BadRequest(new { msg = "Token not found" });
+
+        var (id, name) = (int.Parse(idClaim.Value), nameClaim.Value);
+
+        return new AuthResponse(id, name, Jwt(id, name));
     }
 }
