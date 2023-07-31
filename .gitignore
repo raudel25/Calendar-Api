@@ -1,6 +1,7 @@
+.idea/
+.vscode/
 bin/
 obj/
-Migrations/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
