@@ -4,9 +4,9 @@ namespace Calendar_Api.Helpers;
 
 public class EventRequest
 {
-    public string Title { get; set; }
+    public string Title { get; set; } = null!;
 
-    public string Notes { get; set; }
+    public string Notes { get; set; } = null!;
 
     public DateTime Start { get; set; }
 

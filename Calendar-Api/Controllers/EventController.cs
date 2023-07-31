@@ -74,7 +74,7 @@ public class EventController : ControllerBase
         if (idUser == -1 && name == "") return BadRequest(new { msg = "Token not found" });
 
         var e = this._context.Events.SingleOrDefault(e => e.IdUser == idUser && e.Id == id);
-        if (e is null) return NotFound();
+        if (e is null) return NotFound(new { msg = "User not found" });
 
         _context.Entry(e).State = EntityState.Detached;
 
@@ -97,7 +97,7 @@ public class EventController : ControllerBase
         if (idUser == -1 && name == "") return BadRequest(new { msg = "Token not found" });
 
         var e = this._context.Events.SingleOrDefault(e => e.IdUser == idUser && e.Id == id);
-        if (e is null) return NotFound();
+        if (e is null) return NotFound(new { msg = "User not found" });
 
         this._context.Events.Remove(e);
         this._context.SaveChanges();

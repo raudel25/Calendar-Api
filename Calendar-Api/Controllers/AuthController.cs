@@ -49,7 +49,7 @@ public class AuthController : ControllerBase
         return jwtToken;
     }
 
-    [HttpGet("login")]
+    [HttpPost("login")]
     public ActionResult<AuthResponse> Login(AuthRequest request)
     {
         var user = _context.Users.SingleOrDefault(u => u.Email == request.Email);
@@ -82,7 +82,7 @@ public class AuthController : ControllerBase
     public ActionResult<AuthResponse> ReNew()
     {
         var authHeader = Request.Headers["Authorization"].ToString();
-        
+
         var (id, name) = Utils.TokenToIdName(authHeader);
 
         if (id == -1 && name == "") return BadRequest(new { msg = "Token not found" });
