@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Calendar_Api.Helpers;
+using Calendar_Api.Network;
 
 namespace Calendar_Api.Models;
 

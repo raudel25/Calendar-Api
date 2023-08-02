@@ -1,4 +1,4 @@
-namespace Calendar_Api.Helpers;
+namespace Calendar_Api.Network;
 
 public class AuthResponse
 {

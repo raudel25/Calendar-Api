@@ -19,6 +19,8 @@ var connectionString = configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<CalendarContext>(options =>
     options.UseMySQL(connectionString!));
 
+builder.Services.AddScoped<Token>();
+builder.Services.AddScoped<Password>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

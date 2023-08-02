@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Calendar_Api.Services;
 using Microsoft.AspNetCore.Authorization;
-using Calendar_Api.Helpers;
+using Calendar_Api.Network;
 using Microsoft.EntityFrameworkCore;
 
 namespace Calendar_Api.Controllers;
@@ -13,10 +13,11 @@ public class EventController : ControllerBase
 {
     private readonly CalendarContext _context;
 
-
-    public EventController(CalendarContext context)
+    private readonly Token _token;
+    public EventController(CalendarContext context, Token token)
     {
         this._context = context;
+        this._token = token;
     }
 
     [HttpGet]
@@ -26,7 +27,7 @@ public class EventController : ControllerBase
         if (!authHeader.StartsWith("Bearer "))
             return BadRequest(new { msg = "Token not found" });
 
-        var (id, name) = Utils.TokenToIdName(authHeader);
+        var (id, name) = this._token.TokenToIdName(authHeader);
 
         if (id == -1 && name == "") return BadRequest(new { msg = "Token not found" });
 
@@ -38,7 +39,7 @@ public class EventController : ControllerBase
     {
         var authHeader = Request.Headers["Authorization"].ToString();
 
-        var (idUser, name) = Utils.TokenToIdName(authHeader);
+        var (idUser, name) = this._token.TokenToIdName(authHeader);
 
         if (idUser == -1 && name == "") return BadRequest(new { msg = "Token not found" });
 
@@ -52,7 +53,7 @@ public class EventController : ControllerBase
     {
         var authHeader = Request.Headers["Authorization"].ToString();
 
-        var (id, name) = Utils.TokenToIdName(authHeader);
+        var (id, name) = this._token.TokenToIdName(authHeader);
 
         if (id == -1 && name == "") return BadRequest(new { msg = "Token not found" });
 
@@ -69,7 +70,7 @@ public class EventController : ControllerBase
     {
         var authHeader = Request.Headers["Authorization"].ToString();
 
-        var (idUser, name) = Utils.TokenToIdName(authHeader);
+        var (idUser, name) = this._token.TokenToIdName(authHeader);
 
         if (idUser == -1 && name == "") return BadRequest(new { msg = "Token not found" });
 
@@ -92,7 +93,7 @@ public class EventController : ControllerBase
     {
         var authHeader = Request.Headers["Authorization"].ToString();
 
-        var (idUser, name) = Utils.TokenToIdName(authHeader);
+        var (idUser, name) = this._token.TokenToIdName(authHeader);
 
         if (idUser == -1 && name == "") return BadRequest(new { msg = "Token not found" });
 
