@@ -3,6 +3,7 @@ using Calendar_Api.Models;
 using Calendar_Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Calendar_Api.Network;
+using Microsoft.EntityFrameworkCore;
 
 namespace Calendar_Api.Controllers;
 
@@ -24,9 +25,9 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public ActionResult<AuthResponse> Login(AuthRequest request)
+    public async Task<ActionResult<AuthResponse>> Login(AuthRequest request)
     {
-        var user = _context.Users.SingleOrDefault(u => u.Email == request.Email);
+        var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == request.Email);
 
         if (user is null) return BadRequest(new { msg = "Incorrect email" });
 
@@ -39,19 +40,19 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
-    public ActionResult<AuthResponse> Register(User user)
+    public async Task<ActionResult<AuthResponse>> Register(User user)
     {
         var (valid, msg) = user.ValidUser();
 
         if (!valid) return BadRequest(new { msg });
 
-        if (this._context.Users.SingleOrDefault(u => u.Email == user.Email) is not null)
+        if (await this._context.Users.SingleOrDefaultAsync(u => u.Email == user.Email) is not null)
             return BadRequest(new { msg = "The email is already registered" });
 
         user.Password = this._password.EncryptPassword(user.Password);
 
         _context.Users.Add(user);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         return user.AuthResponse(this._token.Jwt(user.Id, user.Name));
     }
