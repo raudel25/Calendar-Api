@@ -14,6 +14,7 @@ public class EventController : ControllerBase
     private readonly CalendarContext _context;
 
     private readonly Token _token;
+
     public EventController(CalendarContext context, Token token)
     {
         this._context = context;
@@ -24,7 +25,7 @@ public class EventController : ControllerBase
     public async Task<ActionResult<IEnumerable<EventResponse>>> Get()
     {
         var authHeader = Request.Headers["Authorization"].ToString();
-        
+
         var (id, name) = this._token.TokenToIdName(authHeader);
 
         if (id == -1 && name == "") return BadRequest(new { msg = "Token not found" });

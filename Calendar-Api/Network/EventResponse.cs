@@ -8,13 +8,13 @@ public class EventResponse
 
     public string Notes { get; set; }
 
-    public DateTime Start { get; set; }
+    public long Start { get; set; }
 
-    public DateTime End { get; set; }
+    public long End { get; set; }
 
     public int IdUser { get; set; }
 
-    public EventResponse(int id, string title, string notes, DateTime start, DateTime end, int idUser)
+    public EventResponse(int id, string title, string notes, long start, long end, int idUser)
     {
         this.Id = id;
         this.Title = title;

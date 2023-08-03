@@ -14,15 +14,15 @@ public class Event
 
     public string Notes { get; set; }
 
-    public DateTime Start { get; set; }
+    public long Start { get; set; }
 
-    public DateTime End { get; set; }
+    public long End { get; set; }
 
     [ForeignKey("User")] public int IdUser { get; set; }
 
     public User User { get; set; } = null!;
 
-    public Event(string title, string notes, DateTime start, DateTime end, int idUser)
+    public Event(string title, string notes, long start, long end, int idUser)
     {
         this.Title = title;
         this.Notes = notes;
