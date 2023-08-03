@@ -102,6 +102,6 @@ public class EventController : ControllerBase
         this._context.Events.Remove(e);
         await this._context.SaveChangesAsync();
 
-        return Ok();
+        return Ok(new { ok = true });
     }
 }
