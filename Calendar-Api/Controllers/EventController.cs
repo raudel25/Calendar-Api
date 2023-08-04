@@ -22,11 +22,9 @@ public class EventController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<EventResponse>>> Get()
+    public async Task<ActionResult<IEnumerable<EventResponse>>> Get([FromHeader] string authorization)
     {
-        var authHeader = Request.Headers["Authorization"].ToString();
-
-        var (id, name) = this._token.TokenToIdName(authHeader);
+        var (id, name) = this._token.TokenToIdName(authorization);
 
         if (id == -1 && name == "") return BadRequest(new { msg = "Token not found" });
 
@@ -34,11 +32,9 @@ public class EventController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<EventResponse>> GetEvent(int id)
+    public async Task<ActionResult<EventResponse>> GetEvent(int id,[FromHeader] string authorization)
     {
-        var authHeader = Request.Headers["Authorization"].ToString();
-
-        var (idUser, name) = this._token.TokenToIdName(authHeader);
+        var (idUser, name) = this._token.TokenToIdName(authorization);
 
         if (idUser == -1 && name == "") return BadRequest(new { msg = "Token not found" });
 
@@ -48,11 +44,9 @@ public class EventController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<EventResponse>> Post(EventRequest request)
+    public async Task<ActionResult<EventResponse>> Post(EventRequest request,[FromHeader] string authorization)
     {
-        var authHeader = Request.Headers["Authorization"].ToString();
-
-        var (id, name) = this._token.TokenToIdName(authHeader);
+        var (id, name) = this._token.TokenToIdName(authorization);
 
         if (id == -1 && name == "") return BadRequest(new { msg = "Token not found" });
 
@@ -65,11 +59,9 @@ public class EventController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public async Task<ActionResult<EventResponse>> Put(int id, EventRequest request)
+    public async Task<ActionResult<EventResponse>> Put(int id, EventRequest request,[FromHeader] string authorization)
     {
-        var authHeader = Request.Headers["Authorization"].ToString();
-
-        var (idUser, name) = this._token.TokenToIdName(authHeader);
+        var (idUser, name) = this._token.TokenToIdName(authorization);
 
         if (idUser == -1 && name == "") return BadRequest(new { msg = "Token not found" });
 
@@ -88,11 +80,9 @@ public class EventController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, [FromHeader] string authorization)
     {
-        var authHeader = Request.Headers["Authorization"].ToString();
-
-        var (idUser, name) = this._token.TokenToIdName(authHeader);
+        var (idUser, name) = this._token.TokenToIdName(authorization);
 
         if (idUser == -1 && name == "") return BadRequest(new { msg = "Token not found" });
 

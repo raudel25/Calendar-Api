@@ -58,11 +58,9 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet("renew"), Authorize]
-    public ActionResult<AuthResponse> ReNew()
+    public ActionResult<AuthResponse> ReNew([FromHeader] string authorization)
     {
-        var authHeader = Request.Headers["Authorization"].ToString();
-
-        var (id, name) = this._token.TokenToIdName(authHeader);
+        var (id, name) = this._token.TokenToIdName(authorization);
 
         if (id == -1 && name == "") return BadRequest(new { msg = "Token not found" });
 
