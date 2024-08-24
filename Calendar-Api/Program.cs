@@ -6,9 +6,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var appSettings = new ConfigurationBuilder()
+#if DEBUG
+    var appSettings = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.Development.json");
+#else
+    var appSettings = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json");
+#endif
 
 // Add services to the container.
 
@@ -17,7 +23,7 @@ builder.Services.AddControllers();
 var configuration = appSettings.Build();
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<CalendarContext>(options =>
-    options.UseMySQL(connectionString!));
+            options.UseNpgsql(connectionString!));
 
 builder.Services.AddScoped<Token>();
 builder.Services.AddScoped<Password>();
