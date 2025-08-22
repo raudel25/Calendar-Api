@@ -7,13 +7,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 var builder = WebApplication.CreateBuilder(args);
 
 #if DEBUG
-    var appSettings = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.Development.json");
+var appSettings = new ConfigurationBuilder()
+.SetBasePath(Directory.GetCurrentDirectory())
+.AddJsonFile("appsettings.Development.json")
+.AddEnvironmentVariables();
 #else
     var appSettings = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json");
+    .AddJsonFile("appsettings.json")
+    .AddEnvironmentVariables();
 #endif
 
 // Add services to the container.
